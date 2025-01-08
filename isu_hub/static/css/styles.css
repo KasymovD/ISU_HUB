@@ -1,0 +1,22 @@
+body {
+    background: url("{% static 'images/background.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #ffffff; /* Белый текст для контраста */
+}
+
+.card-img-top {
+    width: 100%;
+    aspect-ratio: 4 / 3; /* Соотношение сторон */
+    object-fit: cover;
+}
+
+.card-img-top {
+    width: 100%; /* Занимает всю ширину контейнера */
+    height: 200px; /* Фиксированная высота */
+    object-fit: cover; /* Изображение обрезается, чтобы заполнить контейнер */
+    border-top-left-radius: calc(.25rem - 1px);
+    border-top-right-radius: calc(.25rem - 1px);
+}

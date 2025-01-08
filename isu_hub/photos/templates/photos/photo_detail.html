@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ photo.activity }}</title> <!-- Обновлено с {{ photo.title }} на {{ photo.activity }} -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f8f9fa; /* Лёгкий фон для лучшего восприятия */
+        }
+        .photo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #fff; /* Белый фон для контейнера */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .photo-header {
+            position: relative;
+            display: inline-block; /* Чтобы кнопка позиционировалась относительно изображения */
+        }
+        .photo-header img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .download-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            background-color: rgba(40, 167, 69, 0.8); /* Полупрозрачный зелёный фон */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        .download-button:hover {
+            background-color: rgba(40, 167, 69, 1);
+        }
+        .photo-container h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-top: 20px;
+        }
+        .photo-container p {
+            color: #666;
+            margin: 15px 0;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="photo-container">
+        <div class="photo-header">
+            <img src="{{ photo.image.url }}" alt="{{ photo.activity }}">
+            <a href="{{ photo.image.url }}" download class="download-button">
+                <i class="fas fa-download"></i> Download
+            </a>
+        </div>
+        <h1>{{ photo.activity }}</h1>
+        <p>{{ photo.description }}</p>
+        <p><strong>Date:</strong> {{ photo.date|date:"d.m.Y" }}</p>
+        <a href="{% url 'photo_list' %}" class="back-link">Back to list</a>
+    </div>
+
+    <!-- Подключение Font Awesome для иконки скачивания -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>
