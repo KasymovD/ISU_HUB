@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0xw@!)z=vh=_uj-6*5_wc6q(c66t^!go3bl-dbdsarb9d*)iuk
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ['https://6af2-60-249-245-167.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://e649-60-249-145-185.ngrok-free.app']
 
 # Параметры аутентификации
 LOGIN_URL = '/login/'  # Маршрут для страницы входа
