@@ -1,2 +1,3 @@
 /isu_hub/media/photos/
 /.venv
+/db.sqlite3
