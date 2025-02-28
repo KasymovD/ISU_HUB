@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход - ISU HUB</title>
@@ -8,10 +9,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Подключение Font Awesome для иконок -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
         /* Основные стили */
         body {
-            background-color: #f8f9fa;
+            background: url("{% static 'images/background.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
             font-family: 'Roboto', sans-serif;
             line-height: 1.6;
         }
@@ -30,43 +33,38 @@
         .nav-link:hover {
             color: #adb5bd !important;
         }
-        /* Центрирование формы */
-        .upload-container {
-            margin-top: 50px;
-            margin-bottom: 50px;
+
+        /* Контейнер для формы логина */
+        .login-container {
+            min-height: 100vh; /* чтобы блок центрировался по вертикали */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .upload-card {
+        /* Карточка логина */
+        .login-card {
             padding: 30px;
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             background-color: #ffffff;
+            width: 100%;
+            max-width: 400px; /* Зафиксируем ширину карточки */
         }
-        .upload-card h3 {
+        .login-card h3 {
             margin-bottom: 20px;
             text-align: center;
             color: #343a40;
         }
-        .form-control, .form-select {
+        .login-card .form-control,
+        .login-card .form-select {
             border-radius: 5px;
         }
-        .btn-upload {
+        .btn-login {
             width: 100%;
             padding: 10px;
             border-radius: 5px;
-        }
-        .back-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 15px;
-            background-color: #6c757d;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .back-button:hover {
-            background-color: #5a6268;
+            margin-top: 15px;
         }
         /* Футер */
         .footer {
@@ -133,43 +131,39 @@
         </div>
     </nav>
 
-    <!-- Контейнер для формы входа -->
+    <!-- Контейнер для формы логина -->
     <div class="container login-container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="login-card">
-                    <h3><i class="fas fa-user-circle"></i>Login</h3>
-                    <form method="post">
-                        {% csrf_token %}
-                        <!-- Отображение ошибок формы -->
-                        {% if form.errors %}
-                            <div class="alert alert-danger">
-                                <ul>
-                                    {% for field in form %}
-                                        {% for error in field.errors %}
-                                            <li>{{ error }}</li>
-                                        {% endfor %}
-                                    {% endfor %}
-                                    {% for error in form.non_field_errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
-                        <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                            {{ form.username }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-                            {{ form.password }}
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-login">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    </form>
+        <div class="login-card">
+            <h3><i class="fas fa-user-circle"></i> Login</h3>
+            <form method="post">
+                {% csrf_token %}
+                <!-- Отображение ошибок формы, если есть -->
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                    {{ form.username }}
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
         </div>
     </div>
 
