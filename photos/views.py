@@ -15,6 +15,9 @@ from django.contrib.auth.models import User, Group
 
 # photos/views.py
 
+def is_super_admin(user):
+    return user.is_superuser or user.groups.filter(name='Super Admins').exists()
+
 def is_super_admin_or_photo_uploader(user):
     return user.is_superuser or user.groups.filter(name='Photo Uploaders').exists()
 
@@ -24,6 +27,12 @@ def is_admin(user):
 
 def is_photo_uploader(user):
     return user.groups.filter(name='Photo Uploaders').exists()
+
+@login_required(login_url='login')
+@user_passes_test(is_super_admin, login_url='login')
+def admin_list(request):
+    photos = Photo.objects.all().order_by('-uploaded_at')
+    return render(request, 'photos/admin_list.html', {'photos': photos})
 
 @login_required(login_url='login')  # Перенаправление на 'login' при неаутентифицированном пользователе
 @user_passes_test(is_super_admin_or_photo_uploader, login_url='login')  # Проверка на супер админа или группу

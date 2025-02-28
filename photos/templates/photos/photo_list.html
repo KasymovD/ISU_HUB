@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Подключение Font Awesome для иконок -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
         /* Фон сайта */
         body {
@@ -19,7 +20,7 @@
         }
         /* Обёртка для контента */
         .content-wrapper {
-            background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный чёрный фон */
+            background-color: rgba(1, 1, 0.1, 0.5); /* Полупрозрачный чёрный фон */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -36,21 +37,29 @@
         }
         /* Кнопки */
         .btn {
-            margin: 5px;
+            margin: 5px 0;
         }
         .btn-primary {
             background-color: #007bff;
             border: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
         .btn-primary:hover {
             background-color: #0056b3;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         .btn-secondary {
             background-color: #6c757d;
             border: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
         .btn-secondary:hover {
             background-color: #5a6268;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-outline-light:hover {
+            color: #fff !important;
+            background-color: rgba(255,255,255,0.2) !important;
         }
         /* Карточки */
         .card {
@@ -60,6 +69,11 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
         .card-title a {
             color: #007bff;
@@ -80,7 +94,6 @@
             color: #adb5bd;
             padding: 20px 0;
             margin-top: 50px;
-            border-radius: 0 0 10px 10px;
         }
         .footer a {
             color: #adb5bd;
@@ -114,17 +127,39 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         .form-label {
-        color: #000; /* Устанавливает цвет шрифта черным */
-        font-weight: bold; /* Делает текст жирным (опционально) */
+            color: #000; /* Устанавливает цвет шрифта черным */
+            font-weight: bold; /* Делает текст жирным */
+        }
+        /* Пагинация */
+        .pagination .page-item .page-link {
+            color: #007bff;
+            transition: background-color 0.3s, color 0.3s;
+            border: none;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            border-radius: 5px;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #999999;
+            background-color: #f2f2f2;
+            border: none;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <!-- Навигационная панель -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
         <div class="container">
             <!-- Ссылка на photo_list -->
-            <a class="navbar-brand" href="{% url 'photo_list' %}">ISU HUB</a>
+            <a class="navbar-brand fw-bold" href="{% url 'photo_list' %}">ISU HUB</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -147,19 +182,26 @@
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light btn-sm">
+                                <button type="submit" class="btn btn-outline-light btn-sm mx-2">
                                     <i class="fas fa-sign-out-alt"></i> Exit
                                 </button>
                             </form>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'photo_upload' %}" class="btn btn-outline-light btn-sm ms-2">
+                            <a href="{% url 'photo_upload' %}" class="btn btn-outline-light btn-sm">
                                 <i class="fas fa-upload"></i> Upload
                             </a>
                         </li>
+                        {% if user.is_superuser %}
+                        <li class="nav-item ms-2">
+                            <a href="{% url 'admin_list' %}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-user-cog"></i> Admin View
+                            </a>
+                        </li>
+                        {% endif %}
                     {% else %}
                         <li class="nav-item">
-                            <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">
+                            <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm ms-2">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>
@@ -170,40 +212,89 @@
     </nav>
 
     <!-- Герой-секция -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-text">
-                <h1>Welcome to ISU HUB</h1>
-                <p>The best posts and photos</p>
-            </div>
+    <section class="hero d-flex align-items-center justify-content-center text-center">
+        <div class="hero-text position-relative">
+            <h1>Welcome to ISU HUB</h1>
+            <p>The best posts and photos</p>
+            <!-- Кот располагается «рядом» -->
+            <img src="{% static 'images/cat.gif' %}" alt="Funny cat" class="hero-cat">
         </div>
     </section>
 
+    <style>
+    @keyframes float {
+        0% { transform: translateY(-50%) }
+        50% { transform: translateY(-60%) }
+        100% { transform: translateY(-50%) }
+    }
+    .hero {
+        min-height: 300px;           /* Достаточная высота для текста и кота */
+        padding: 50px 0;             /* Отступы сверху и снизу */
+        /* Если нужен фон для hero, можно добавить здесь */
+        /* background: rgba(0,0,0,0.5); */
+    }
+
+    /* Текст в hero */
+    .hero-text {
+        display: inline-block;       /* Позволяет блоку "занимать" место по центру */
+        background-color: rgba(128, 128, 128, 0.7); /* Полупрозрачный фон */
+        padding: 20px 30px;
+        border-radius: 10px;
+        color: #fff;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        position: relative;          /* Чтобы кот мог позиционироваться относительно блока */
+    }
+
+    /* Сама картинка кота */
+    .hero-cat {
+        position: absolute;
+        top: 50%;                 /* Центр по вертикали */
+        left: 100%;               /* Расположение справа от родителя */
+        transform: translateY(-50%);
+        margin-left: 15px;
+        width: 120px;
+        max-height: 150px;
+        border-radius: 5px;
+
+        /* Применяем анимацию:
+           float 3s ease-in-out infinite
+           1) float — имя анимации
+           2) 3s — длительность цикла
+           3) ease-in-out — сглаженный переход
+           4) infinite — повторяется бесконечно
+        */
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Эффект при наведении (опционально) */
+    .hero-cat:hover {
+        transform: translate(0, -50%) scale(1.1);
+        cursor: pointer;
+    }
+    </style>
+
+
+
     <!-- Форма поиска и фильтрации -->
-    <div class="container">
-        <div class="search-filter">
-            <div class="row align-items-center">
-                <!-- Поле поиска -->
-                <div class="col-md-8 d-flex mb-3">
-                    <form class="d-flex w-100" method="GET">
-                        <input type="text" name="q" class="form-control me-2" placeholder="Search..." value="{{ request.GET.q }}">
-                        <button type="submit" class="btn btn-primary">
+    <div class="container content-wrapper">
+        <div class="row justify-content-center mb-3">
+            <div class="col-auto">
+                <div class="d-flex align-items-center">
+                    <!-- Поле поиска (увеличенная ширина) -->
+                    <form class="d-flex" method="GET" style="min-width: 300px;">
+                        <input type="text" name="q" class="form-control me-2" placeholder="Search..." value="{{ request.GET.q }}" style="width: 300px;">
+                        <!-- Кнопка Search -->
+                        <button type="submit" class="btn btn-primary me-2">
                             <i class="fas fa-search"></i> Search
                         </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i>
-                        </button>
                     </form>
-                </div>
-                <!-- Кнопка фильтрации -->
-                <div class="col-md-4 text-end">
-                    <button class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    <!-- Кнопка Filter -->
+                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">
                         <i class="fas fa-filter"></i> Filter
                     </button>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Модальное окно фильтрации -->
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -215,105 +306,109 @@
                 </div>
                 <div class="modal-body">
                     <form method="GET">
-                        <div class="row">
-                            <!-- Тип контента -->
-                            <div class="col-md-6 mb-3">
-                                <label for="contentType" class="form-label">Content type</label>
-                                <select name="file_type" id="contentType" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in file_type_choices %}
-                                        <option value="{{ option }}" {% if request.GET.file_type == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="row">
+                                <!-- Пример одного поля -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="contentType" class="form-label">Content type</label>
+                                    <select name="file_type" id="contentType" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in file_type_choices %}
+                                            <option value="{{ option }}"
+                                                {% if request.GET.file_type == option %}selected{% endif %}>
+                                                {{ option }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Местоположение -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="location" class="form-label">Location</label>
+                                    <select name="location" id="location" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in location_choices %}
+                                            <option value="{{ option }}" {% if request.GET.location == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Тип события -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="eventType" class="form-label">Event type</label>
+                                    <select name="event_type" id="eventType" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in event_type_choices %}
+                                            <option value="{{ option }}" {% if request.GET.event_type == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Камера снимок -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="cameraShot" class="form-label">Camera shot</label>
+                                    <select name="camera_shot" id="cameraShot" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in camera_shot_choices %}
+                                            <option value="{{ option }}" {% if request.GET.camera_shot == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Угол камеры -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="cameraAngle" class="form-label">Camera angle</label>
+                                    <select name="camera_angle" id="cameraAngle" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in camera_angle_choices %}
+                                            <option value="{{ option }}" {% if request.GET.camera_angle == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Атмосфера -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="atmosphere" class="form-label">Atmosphere</label>
+                                    <select name="atmosphere" id="atmosphere" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in atmosphere_choices %}
+                                            <option value="{{ option }}" {% if request.GET.atmosphere == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Язык -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="language" class="form-label">Language</label>
+                                    <select name="language" id="language" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in language_choices %}
+                                            <option value="{{ option }}" {% if request.GET.language == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- Раса (закомментировано) -->
+                                <!--
+                                <div class="col-md-6 mb-3">
+                                    <label for="race" class="form-label">Race</label>
+                                    <select name="race" id="race" class="form-select">
+                                        <option value="">All</option>
+                                        {% for option in race_choices %}
+                                            <option value="{{ option }}" {% if request.GET.race == option %}selected{% endif %}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                -->
                             </div>
-                            <!-- Местоположение -->
-                            <div class="col-md-6 mb-3">
-                                <label for="location" class="form-label">Location</label>
-                                <select name="location" id="location" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in location_choices %}
-                                        <option value="{{ option }}" {% if request.GET.location == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
+                            <!-- Кнопки модального окна -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check"></i> Apply
+                                </button>
                             </div>
-                            <!-- Тип события -->
-                            <div class="col-md-6 mb-3">
-                                <label for="eventType" class="form-label">Event type</label>
-                                <select name="event_type" id="eventType" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in event_type_choices %}
-                                        <option value="{{ option }}" {% if request.GET.event_type == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <!-- Камера снимок -->
-                            <div class="col-md-6 mb-3">
-                                <label for="cameraShot" class="form-label">Camera shot</label>
-                                <select name="camera_shot" id="cameraShot" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in camera_shot_choices %}
-                                        <option value="{{ option }}" {% if request.GET.camera_shot == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <!-- Угол камеры -->
-                            <div class="col-md-6 mb-3">
-                                <label for="cameraAngle" class="form-label">Camera angle</label>
-                                <select name="camera_angle" id="cameraAngle" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in camera_angle_choices %}
-                                        <option value="{{ option }}" {% if request.GET.camera_angle == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <!-- Атмосфера -->
-                            <div class="col-md-6 mb-3">
-                                <label for="atmosphere" class="form-label">Atmosphere</label>
-                                <select name="atmosphere" id="atmosphere" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in atmosphere_choices %}
-                                        <option value="{{ option }}" {% if request.GET.atmosphere == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <!-- Язык -->
-                            <div class="col-md-6 mb-3">
-                                <label for="language" class="form-label">Language</label>
-                                <select name="language" id="language" class="form-select">
-                                    <option value="">All</option>
-                                    {% for option in language_choices %}
-                                        <option value="{{ option }}" {% if request.GET.language == option %}selected{% endif %}>{{ option }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <!-- Раса -->
-<!--                            <div class="col-md-6 mb-3">-->
-<!--                                <label for="race" class="form-label">Race</label>-->
-<!--                                <select name="race" id="race" class="form-select">-->
-<!--                                    <option value="">All</option>-->
-<!--                                    {% for option in race_choices %}-->
-<!--                                        <option value="{{ option }}" {% if request.GET.race == option %}selected{% endif %}>{{ option }}</option>-->
-<!--                                    {% endfor %}-->
-<!--                                </select>-->
-<!--                            </div>-->
-                        </div>
-                        <!-- Кнопки модального окна -->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="fas fa-times"></i> Close
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check"></i> Apply
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Сетка с контентом -->
-    <div class="container">
+        <!-- Сетка с контентом -->
         <div class="row mt-4">
             {% for photo in photos %}
                 <div class="col-md-4 mb-4">
@@ -365,7 +460,9 @@
                     {% if photos.number == num %}
                         <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                     {% elif num > photos.number|add:'-3' and num < photos.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                        </li>
                     {% endif %}
                 {% endfor %}
 
@@ -397,7 +494,7 @@
         </div>
     </footer>
 
-    <!-- Подключение Bootstrap JS и зависимостей -->
+    <!-- Подключение Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Подключение Font Awesome JS (опционально для иконок) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
